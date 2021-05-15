@@ -1,0 +1,8 @@
+{
+	"main": "index.js",
+	"version": "0.0.1",
+	"name": "emoedit",
+	"description": "edit or clear emoji history",
+	"tags": ["fun"],
+	"authors":["451135632882925570"]
+}
