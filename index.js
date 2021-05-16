@@ -56,9 +56,23 @@ export default {
                     {
                         type: "text-and-danger-button",
                         text: "clear all emoji use history",
-                        subtext: "all emoji history, including default suggestions will be erased, and discord will reload",
+                        subtext: "all emoji history, including default suggestions will be erased",
                         buttonText: "clear",
                         onclick: clearHistory
+                    },
+                    {
+                        type: "text-and-danger-button",
+                        text: "reset emoji history to default",
+                        subtext: "emoji history will be replaced with the default emojis",
+                        buttonText: "reset",
+                        onclick: defaultHistory
+                    },
+                    {
+                        type: "text-and-danger-button",
+                        text: "remove all favorited emojis",
+                        subtext: "all favorited emojis will be removed",
+                        buttonText: "remove",
+                        onclick: clearFavorites
                     },
                     {
                         type: "header",
@@ -69,6 +83,8 @@ export default {
         },
         onRemove: () => {
             commands.remove("clearEmojiHistory")
+            commands.remove("defaultEmojiHistory")
+            commands.remove("clearEmojiFavorites")
             removeItem("emoedit") //clean up, remove the settings pane
         }
     }
