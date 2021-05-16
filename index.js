@@ -72,12 +72,24 @@ const setCommands = () => {
     else removeCommands()
 }
 
+const isEmpty = () => {
+    for (let elem in JSON.parse(window.localStorage.getItem("EmojiStore"))._state.usageHistory) return false
+    return true
+}
+
+
 export default {
     goosemodHandlers: {
         onImport: () => {
             addCommands()
         },
         onLoadingFinished: () => {
+            if (isEmpty()) {
+                goosemodScope.showToast(
+                    "you have no emoji history - it will reset to default if you reload in this state, so use some emojis",
+                    { timeout: 8000 }
+                )
+            }
             createItem(
                 "emoedit",
                 [
