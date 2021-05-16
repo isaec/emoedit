@@ -1,20 +1,27 @@
 import { commands } from "@goosemod/patcher"
 import { createItem, removeItem } from '@goosemod/settings'
 
-const version = "1.0.0"
+const version = "1.0.1"
 
 let settings = {
-    compat: "1.0.0",
+    compat: "1.0.1",
     commands: false
 }
 
-const alterState = callback => {
-    return () => {
-        let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
-        callback(emojiStore._state)
-        window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
-        location.reload()
-    }
+const alterState = (callback) => {
+    let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
+    callback(emojiStore._state)
+    window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
+    goosemodScope.confirmDialog(
+        "reload now", //button text
+        "reload to apply changes?", //title
+        "changes to discord emoji history require a reload to take effect", //description
+        "later" //cancel text
+    ).then(res => {
+        if (res) {
+            location.reload()
+        }
+    })
 }
 
 const clearHistory = () => alterState(state => state.usageHistory = {
@@ -65,12 +72,24 @@ const setCommands = () => {
     else removeCommands()
 }
 
+const isEmpty = () => {
+    for (let elem in JSON.parse(window.localStorage.getItem("EmojiStore"))._state.usageHistory) return false
+    return true
+}
+
+
 export default {
     goosemodHandlers: {
         onImport: () => {
             addCommands()
         },
         onLoadingFinished: () => {
+            if (isEmpty()) {
+                goosemodScope.showToast(
+                    "you have no emoji history - it will reset to default if you reload in this state, so use some emojis",
+                    { timeout: 8000 }
+                )
+            }
             createItem(
                 "emoedit",
                 [
