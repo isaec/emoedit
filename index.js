@@ -1,10 +1,17 @@
+import { commands } from "@goosemod/patcher"
+
 export default {
     goosemodHandlers: {
         onImport: () => {
-            console.log("test")
+            commands.add(
+                "clearEmojiHistory",
+                "clear emoji history",
+                () => { console.log("clear!") },
+                []
+            )
         },
         onRemove: () => {
-            console.log("we out!")
+            commands.remove("clearEmojiHistory")
         }
     }
 }
