@@ -3,6 +3,11 @@ import { createItem, removeItem } from '@goosemod/settings'
 
 const version = "0.0.1"
 
+let settings = {
+    compat: "0.0.1",
+    commands: false
+}
+
 const alterState = callback => {
     return () => {
         let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
@@ -25,24 +30,40 @@ const defaultHistory = () => alterState(state => delete state.usageHistory)
 
 const clearFavorites = () => alterState(state => delete state.favorites)
 
+let addedCommands = false
+
+const addCommands = () => {
+    if (!settings.commands) return
+    commands.add(
+        "clearEmojiHistory",
+        "clear emoji history",
+        clearHistory, []
+    )
+    commands.add(
+        "defaultEmojiHistory",
+        "reset emoji history to default",
+        defaultHistory, []
+    )
+    commands.add(
+        "clearEmojiFavorites",
+        "clear emoji favorites",
+        clearFavorites, []
+    )
+    addedCommands = true
+}
+
+const removeCommands = () => {
+    if (!addedCommands) return
+    commands.remove("clearEmojiHistory")
+    commands.remove("defaultEmojiHistory")
+    commands.remove("clearEmojiFavorites")
+    addedCommands = false
+}
+
 export default {
     goosemodHandlers: {
         onImport: () => {
-            commands.add(
-                "clearEmojiHistory",
-                "clear emoji history",
-                clearHistory, []
-            )
-            commands.add(
-                "defaultEmojiHistory",
-                "reset emoji history to default",
-                defaultHistory, []
-            )
-            commands.add(
-                "clearEmojiFavorites",
-                "clear emoji favorites",
-                clearFavorites, []
-            )
+            addCommands()
         },
         onLoadingFinished: () => {
             createItem(
@@ -77,15 +98,27 @@ export default {
                     {
                         type: "header",
                         text: "config"
+                    },
+                    {
+                        type: "toggle",
+                        text: "add slash commands",
+                        subtext: "adds slash commands for easy access",
+                        onToggle: val => settings.commands = val,
+                        isToggled: () => settings.commands
                     }
                 ]
             )
         },
         onRemove: () => {
-            commands.remove("clearEmojiHistory")
-            commands.remove("defaultEmojiHistory")
-            commands.remove("clearEmojiFavorites")
+            removeCommands()
             removeItem("emoedit") //clean up, remove the settings pane
+        },
+        //this part makes persistent settings work
+        getSettings: () => [settings],
+        loadSettings: ([_settings]) => {
+            if (_settings.compat !== version) return
+            settings = _settings
+            addCommands()
         }
     }
 }
