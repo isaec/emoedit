@@ -8,13 +8,20 @@ let settings = {
     commands: false
 }
 
-const alterState = callback => {
-    return () => {
-        let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
-        callback(emojiStore._state)
-        window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
-        location.reload()
-    }
+const alterState = (callback) => {
+    let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
+    callback(emojiStore._state)
+    window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
+    goosemodScope.confirmDialog(
+        "reload now", //button text
+        "reload to apply changes?", //title
+        "changes to discord emoji history require a reload to take effect", //description
+        "later" //cancel text
+    ).then(res => {
+        if (res) {
+            location.reload()
+        }
+    })
 }
 
 const clearHistory = () => alterState(state => state.usageHistory = {
