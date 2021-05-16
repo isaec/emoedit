@@ -1,2 +1,2 @@
 # emoedit
-edit or clear discord emoji history
+reset or clear discord emoji history

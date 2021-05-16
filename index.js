@@ -1,10 +1,10 @@
 import { commands } from "@goosemod/patcher"
 import { createItem, removeItem } from '@goosemod/settings'
 
-const version = "0.0.1"
+const version = "1.0.0"
 
 let settings = {
-    compat: "0.0.1",
+    compat: "1.0.0",
     commands: false
 }
 
