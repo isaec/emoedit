@@ -60,6 +60,11 @@ const removeCommands = () => {
     addedCommands = false
 }
 
+const setCommands = () => {
+    if (settings.commands) addCommands()
+    else removeCommands()
+}
+
 export default {
     goosemodHandlers: {
         onImport: () => {
@@ -103,7 +108,10 @@ export default {
                         type: "toggle",
                         text: "add slash commands",
                         subtext: "adds slash commands for easy access",
-                        onToggle: val => settings.commands = val,
+                        onToggle: val => {
+                            settings.commands = val
+                            setCommands()
+                        },
                         isToggled: () => settings.commands
                     }
                 ]
@@ -118,7 +126,7 @@ export default {
         loadSettings: ([_settings]) => {
             if (_settings.compat !== version) return
             settings = _settings
-            addCommands()
+            setCommands()
         }
     }
 }
