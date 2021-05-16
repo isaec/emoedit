@@ -4,7 +4,26 @@ import { createItem, removeItem } from '@goosemod/settings'
 const version = "0.0.1"
 
 const clearHistory = () => {
-    console.log("clear")
+    let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
+    console.log(emojiStore._state.usageHistory)
+    emojiStore._state.usageHistory = {
+        "star": {
+            "totalUses": 0,
+            "recentUses": [],
+            "frecency": 200,
+            "score": 200
+        }
+    }
+    window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
+    location.reload()
+}
+
+const defaultHistory = () => {
+    let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
+    console.log(emojiStore._state.usageHistory)
+    delete emojiStore._state.usageHistory
+    window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
+    location.reload()
 }
 
 export default {
@@ -14,6 +33,12 @@ export default {
                 "clearEmojiHistory",
                 "clear emoji history",
                 clearHistory,
+                []
+            )
+            commands.add(
+                "defaultEmojiHistory",
+                "reset emoji history to default",
+                defaultHistory,
                 []
             )
         },
@@ -29,7 +54,7 @@ export default {
                     {
                         type: "text-and-danger-button",
                         text: "clear all emoji use history",
-                        subtext: "all emoji history, including default suggestions will be erased",
+                        subtext: "all emoji history, including default suggestions will be erased, and discord will reload",
                         buttonText: "clear",
                         onclick: clearHistory
                     },
