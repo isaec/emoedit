@@ -3,28 +3,27 @@ import { createItem, removeItem } from '@goosemod/settings'
 
 const version = "0.0.1"
 
-const clearHistory = () => {
-    let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
-    console.log(emojiStore._state.usageHistory)
-    emojiStore._state.usageHistory = {
-        "star": {
-            "totalUses": 0,
-            "recentUses": [],
-            "frecency": 200,
-            "score": 200
-        }
+const alterState = callback => {
+    return () => {
+        let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
+        callback(emojiStore._state)
+        window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
+        location.reload()
     }
-    window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
-    location.reload()
 }
 
-const defaultHistory = () => {
-    let emojiStore = JSON.parse(window.localStorage.getItem("EmojiStore"))
-    console.log(emojiStore._state.usageHistory)
-    delete emojiStore._state.usageHistory
-    window.localStorage.setItem("EmojiStore", JSON.stringify(emojiStore))
-    location.reload()
-}
+const clearHistory = () => alterState(state => state.usageHistory = {
+    "star": {
+        "totalUses": 0,
+        "recentUses": [],
+        "frecency": 200,
+        "score": 200
+    }
+})
+
+const defaultHistory = () => alterState(state => delete state.usageHistory)
+
+const clearFavorites = () => alterState(state => delete state.favorites)
 
 export default {
     goosemodHandlers: {
@@ -32,14 +31,17 @@ export default {
             commands.add(
                 "clearEmojiHistory",
                 "clear emoji history",
-                clearHistory,
-                []
+                clearHistory, []
             )
             commands.add(
                 "defaultEmojiHistory",
                 "reset emoji history to default",
-                defaultHistory,
-                []
+                defaultHistory, []
+            )
+            commands.add(
+                "clearEmojiFavorites",
+                "clear emoji favorites",
+                clearFavorites, []
             )
         },
         onLoadingFinished: () => {
